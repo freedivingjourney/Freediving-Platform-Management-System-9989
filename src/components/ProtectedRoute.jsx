@@ -6,19 +6,19 @@ import * as FiIcons from 'react-icons/fi';
 
 const { FiLock, FiShield, FiAlertTriangle } = FiIcons;
 
-const ProtectedRoute = ({ 
-  children, 
-  requiredPermissions = [], 
+const ProtectedRoute = ({
+  children,
+  requiredPermissions = [],
   requiredRole = null,
   fallback = null,
-  showFallback = true 
+  showFallback = true
 }) => {
   const { hasPermission, hasAnyPermission, getUserRole, getRoleDisplayName } = useRole();
-  
+
   // Check role-based access
   if (requiredRole && getUserRole() !== requiredRole) {
     if (!showFallback) return null;
-    
+
     return fallback || (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -31,10 +31,9 @@ const ProtectedRoute = ({
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Restricted</h2>
           <p className="text-gray-600 mb-6">
-            This page requires {getRoleDisplayName(requiredRole)} privileges. 
-            Your current role is {getRoleDisplayName(getUserRole())}.
+            This page requires {getRoleDisplayName(requiredRole)} privileges. Your current role is {getRoleDisplayName(getUserRole())}.
           </p>
-          <button 
+          <button
             onClick={() => window.history.back()}
             className="bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
           >
@@ -44,11 +43,11 @@ const ProtectedRoute = ({
       </motion.div>
     );
   }
-  
+
   // Check permission-based access
   if (requiredPermissions.length > 0 && !hasAnyPermission(requiredPermissions)) {
     if (!showFallback) return null;
-    
+
     return fallback || (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -61,10 +60,9 @@ const ProtectedRoute = ({
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Insufficient Permissions</h2>
           <p className="text-gray-600 mb-6">
-            You don't have the required permissions to access this page. 
-            Contact an administrator if you believe this is an error.
+            You don't have the required permissions to access this page. Contact an administrator if you believe this is an error.
           </p>
-          <button 
+          <button
             onClick={() => window.history.back()}
             className="bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
           >
@@ -74,7 +72,7 @@ const ProtectedRoute = ({
       </motion.div>
     );
   }
-  
+
   return children;
 };
 

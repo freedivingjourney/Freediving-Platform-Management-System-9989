@@ -19,6 +19,7 @@ import Diary from './pages/Diary';
 import Goals from './pages/Goals';
 import AdminPanel from './pages/AdminPanel';
 import UserManagement from './pages/UserManagement';
+import RoleManagement from './pages/RoleManagement';
 import './App.css';
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
                   <Route path="goals" element={<Goals />} />
                   <Route path="admin" element={<AdminPanel />} />
                   <Route path="user-management" element={<UserManagement />} />
+                  <Route path="role-management" element={<RoleManagement />} />
                 </Route>
               </Routes>
             </div>

@@ -26,14 +26,14 @@ const PERMISSIONS = {
   MANAGE_SYSTEM: 'manage_system',
   VIEW_ALL_DATA: 'view_all_data',
   MODERATE_CONTENT: 'moderate_content',
-  
+
   // Instructor permissions
   CREATE_COURSES: 'create_courses',
   MANAGE_STUDENTS: 'manage_students',
   VIEW_STUDENT_PROGRESS: 'view_student_progress',
   APPROVE_CERTIFICATIONS: 'approve_certifications',
   CREATE_EVENTS: 'create_events',
-  
+
   // Student/Member permissions
   LOG_DIVES: 'log_dives',
   SET_GOALS: 'set_goals',
@@ -41,7 +41,7 @@ const PERMISSIONS = {
   ACCESS_COMMUNITY: 'access_community',
   VIEW_COURSES: 'view_courses',
   BOOK_SESSIONS: 'book_sessions',
-  
+
   // General permissions
   VIEW_PROFILE: 'view_profile',
   EDIT_PROFILE: 'edit_profile',
@@ -111,7 +111,7 @@ const ROLE_PERMISSIONS = {
 
 export const RoleProvider = ({ children }) => {
   const { user } = useAuth();
-  
+
   const getUserRole = () => {
     return user?.role || ROLES.MEMBER;
   };

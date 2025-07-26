@@ -43,7 +43,8 @@ const Navbar = () => {
 
   const adminNavItems = [
     { name: 'Admin Panel', path: '/admin', icon: FiShield, permissions: [PERMISSIONS.MANAGE_APPLICATIONS] },
-    { name: 'User Management', path: '/user-management', icon: FiUsers, permissions: [PERMISSIONS.MANAGE_USERS] }
+    { name: 'User Management', path: '/user-management', icon: FiUsers, permissions: [PERMISSIONS.MANAGE_USERS] },
+    { name: 'Role Management', path: '/role-management', icon: FiShield, permissions: [PERMISSIONS.MANAGE_USERS] }
   ];
 
   const getVisibleNavItems = () => {
@@ -88,10 +89,7 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.slice(0, 6).map((item) => (
-              <RoleBasedAccess
-                key={item.name}
-                permissions={item.permissions || []}
-              >
+              <RoleBasedAccess key={item.name} permissions={item.permissions || []}>
                 <Link
                   to={item.path}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
@@ -150,7 +148,6 @@ const Navbar = () => {
                         <SafeIcon icon={FiSettings} className="text-sm" />
                         <span>Settings</span>
                       </Link>
-
                       <RoleBasedAccess permissions={[PERMISSIONS.MANAGE_USERS]}>
                         <Link
                           to="/user-management"
@@ -161,7 +158,16 @@ const Navbar = () => {
                           <span>User Management</span>
                         </Link>
                       </RoleBasedAccess>
-
+                      <RoleBasedAccess permissions={[PERMISSIONS.MANAGE_USERS]}>
+                        <Link
+                          to="/role-management"
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          <SafeIcon icon={FiShield} className="text-sm" />
+                          <span>Role Management</span>
+                        </Link>
+                      </RoleBasedAccess>
                       <RoleBasedAccess permissions={[PERMISSIONS.MANAGE_APPLICATIONS]}>
                         <Link
                           to="/admin"
@@ -172,7 +178,6 @@ const Navbar = () => {
                           <span>Admin Panel</span>
                         </Link>
                       </RoleBasedAccess>
-
                       <hr className="my-1" />
                       <button
                         onClick={handleLogout}
@@ -218,10 +223,7 @@ const Navbar = () => {
           >
             <div className="px-4 py-2 space-y-1">
               {navItems.map((item) => (
-                <RoleBasedAccess
-                  key={item.name}
-                  permissions={item.permissions || []}
-                >
+                <RoleBasedAccess key={item.name} permissions={item.permissions || []}>
                   <Link
                     to={item.path}
                     className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium ${
