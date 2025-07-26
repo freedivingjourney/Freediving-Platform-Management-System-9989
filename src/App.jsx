@@ -1,8 +1,8 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { RoleProvider } from './contexts/RoleContext';
-import { AppProvider } from './contexts/AppContext';
+import {HashRouter as Router,Routes,Route} from 'react-router-dom';
+import {AuthProvider} from './contexts/AuthContext';
+import {RoleProvider} from './contexts/RoleContext';
+import {AppProvider} from './contexts/AppContext';
 import Layout from './components/Layout';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
@@ -20,6 +20,7 @@ import Goals from './pages/Goals';
 import AdminPanel from './pages/AdminPanel';
 import UserManagement from './pages/UserManagement';
 import RoleManagement from './pages/RoleManagement';
+import BreathworkTrainer from './pages/BreathworkTrainer';
 import './App.css';
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
                   <Route path="admin" element={<AdminPanel />} />
                   <Route path="user-management" element={<UserManagement />} />
                   <Route path="role-management" element={<RoleManagement />} />
+                  <Route path="breathwork-trainer" element={<BreathworkTrainer />} />
                 </Route>
               </Routes>
             </div>
