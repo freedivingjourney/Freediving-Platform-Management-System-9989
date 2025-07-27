@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     // Simulate login process with role assignment
     let mockUser;
-    
+
     // Assign roles based on email for demo purposes
     if (email.includes('admin')) {
       mockUser = {
@@ -41,7 +41,11 @@ export const AuthProvider = ({ children }) => {
         status: 'approved',
         avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         certifications: ['System Administrator'],
-        personalBests: { depth: -30, static: '5:00', dynamic: 100 },
+        personalBests: {
+          depth: -30,
+          static: '5:00',
+          dynamic: 100
+        },
         humanDesignType: 'Manifestor',
         joinDate: '2024-01-01'
       };
@@ -54,7 +58,11 @@ export const AuthProvider = ({ children }) => {
         status: 'approved',
         avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
         certifications: ['AIDA Master Instructor', 'SSI Level 3'],
-        personalBests: { depth: -40, static: '6:00', dynamic: 120 },
+        personalBests: {
+          depth: -40,
+          static: '6:00',
+          dynamic: 120
+        },
         humanDesignType: 'Generator',
         joinDate: '2024-01-15'
       };
@@ -67,7 +75,11 @@ export const AuthProvider = ({ children }) => {
         status: 'approved',
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
         certifications: ['AIDA 2', 'Molchanovs Wave 1'],
-        personalBests: { depth: -25, static: '4:30', dynamic: 75 },
+        personalBests: {
+          depth: -25,
+          static: '4:30',
+          dynamic: 75
+        },
         humanDesignType: 'Projector',
         joinDate: '2024-02-01'
       };
@@ -80,7 +92,11 @@ export const AuthProvider = ({ children }) => {
         status: 'approved',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
         certifications: ['AIDA 1'],
-        personalBests: { depth: -15, static: '3:30', dynamic: 50 },
+        personalBests: {
+          depth: -15,
+          static: '3:30',
+          dynamic: 50
+        },
         humanDesignType: 'Reflector',
         joinDate: '2024-03-01'
       };

@@ -741,7 +741,7 @@ const Analytics = () => {
           color="blue"
         />
         <StatCard
-          icon={FiAward}
+          icon={FiCheck}
           title="Completed"
           value={goalAnalysis.completedGoals.length}
           color="green"

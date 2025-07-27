@@ -1,80 +1,94 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
-import { useRole, PERMISSIONS } from '../contexts/RoleContext';
+import React,{useState} from 'react';
+import {Link,useLocation,useNavigate} from 'react-router-dom';
+import {motion,AnimatePresence} from 'framer-motion';
+import {useAuth} from '../contexts/AuthContext';
+import {useRole,PERMISSIONS} from '../contexts/RoleContext';
 import RoleBasedAccess from './RoleBasedAccess';
 import RoleBadge from './RoleBadge';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
 const {
-  FiHome, FiBook, FiUsers, FiCalendar, FiShoppingBag, FiMail, FiUser, FiActivity,
-  FiTarget, FiCompass, FiHeart, FiEdit3, FiSettings, FiLogOut, FiMenu, FiX,
-  FiShield, FiWind, FiApple
+  FiHome,
+  FiBook,
+  FiUsers,
+  FiCalendar,
+  FiShoppingBag,
+  FiMail,
+  FiUser,
+  FiActivity,
+  FiTarget,
+  FiCompass,
+  FiHeart,
+  FiEdit3,
+  FiSettings,
+  FiLogOut,
+  FiMenu,
+  FiX,
+  FiShield,
+  FiWind
 } = FiIcons;
 
-const Navbar = () => {
-  const { isAuthenticated, isApproved, user, logout } = useAuth();
-  const { hasPermission } = useRole();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+const Navbar=()=> {
+  const {isAuthenticated,isApproved,user,logout}=useAuth();
+  const {hasPermission}=useRole();
+  const location=useLocation();
+  const navigate=useNavigate();
+  const [isMobileMenuOpen,setIsMobileMenuOpen]=useState(false);
+  const [showUserMenu,setShowUserMenu]=useState(false);
 
-  const publicNavItems = [
-    { name: 'Home', path: '/', icon: FiHome },
-    { name: 'Classes', path: '/classes', icon: FiBook },
-    { name: 'Directory', path: '/directory', icon: FiUsers },
-    { name: 'Events', path: '/events', icon: FiCalendar },
-    { name: 'Shop', path: '/shop', icon: FiShoppingBag, external: true },
-    { name: 'Contact', path: '/contact', icon: FiMail }
+  const publicNavItems=[
+    {name: 'Home',path: '/',icon: FiHome},
+    {name: 'Classes',path: '/classes',icon: FiBook},
+    {name: 'Directory',path: '/directory',icon: FiUsers},
+    {name: 'Events',path: '/events',icon: FiCalendar},
+    {name: 'Shop',path: '/shop',icon: FiShoppingBag,external: true},
+    {name: 'Contact',path: '/contact',icon: FiMail}
   ];
 
-  const authenticatedNavItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: FiHome },
-    { name: 'Dive Log', path: '/dive-log', icon: FiActivity, permissions: [PERMISSIONS.LOG_DIVES] },
-    { name: 'Analytics', path: '/analytics', icon: FiTarget, permissions: [PERMISSIONS.LOG_DIVES] },
-    { name: 'Classes', path: '/classes', icon: FiBook, permissions: [PERMISSIONS.VIEW_COURSES] },
-    { name: 'Directory', path: '/directory', icon: FiUsers },
-    { name: 'Events', path: '/events', icon: FiCalendar, permissions: [PERMISSIONS.JOIN_EVENTS] },
-    { name: 'Community', path: '/community', icon: FiUsers, permissions: [PERMISSIONS.ACCESS_COMMUNITY] },
-    { name: 'Dive Planner', path: '/dive-planner', icon: FiCompass, permissions: [PERMISSIONS.LOG_DIVES] },
-    { name: 'Human Design', path: '/human-design', icon: FiHeart },
-    { name: 'Diary', path: '/diary', icon: FiEdit3, permissions: [PERMISSIONS.LOG_DIVES] },
-    { name: 'Goals', path: '/goals', icon: FiTarget, permissions: [PERMISSIONS.SET_GOALS] },
-    { name: 'Breathwork', path: '/breathwork-trainer', icon: FiWind, permissions: [PERMISSIONS.LOG_DIVES] },
-    { name: 'Nutrition', path: '/freediving-diets', icon: FiApple, permissions: [PERMISSIONS.LOG_DIVES] }
+  const authenticatedNavItems=[
+    {name: 'Dashboard',path: '/dashboard',icon: FiHome},
+    {name: 'Dive Log',path: '/dive-log',icon: FiActivity,permissions: [PERMISSIONS.LOG_DIVES]},
+    {name: 'Analytics',path: '/analytics',icon: FiTarget,permissions: [PERMISSIONS.LOG_DIVES]},
+    {name: 'Classes',path: '/classes',icon: FiBook,permissions: [PERMISSIONS.VIEW_COURSES]},
+    {name: 'Directory',path: '/directory',icon: FiUsers},
+    {name: 'Events',path: '/events',icon: FiCalendar,permissions: [PERMISSIONS.JOIN_EVENTS]},
+    {name: 'Community',path: '/community',icon: FiUsers,permissions: [PERMISSIONS.ACCESS_COMMUNITY]},
+    {name: 'Dive Planner',path: '/dive-planner',icon: FiCompass,permissions: [PERMISSIONS.LOG_DIVES]},
+    {name: 'Human Design',path: '/human-design',icon: FiHeart},
+    {name: 'Diary',path: '/diary',icon: FiEdit3,permissions: [PERMISSIONS.LOG_DIVES]},
+    {name: 'Goals',path: '/goals',icon: FiTarget,permissions: [PERMISSIONS.SET_GOALS]},
+    {name: 'Breathwork',path: '/breathwork-trainer',icon: FiWind,permissions: [PERMISSIONS.LOG_DIVES]}
   ];
 
-  const adminNavItems = [
-    { name: 'Admin Panel', path: '/admin', icon: FiShield, permissions: [PERMISSIONS.MANAGE_APPLICATIONS] },
-    { name: 'User Management', path: '/user-management', icon: FiUsers, permissions: [PERMISSIONS.MANAGE_USERS] },
-    { name: 'Role Management', path: '/role-management', icon: FiShield, permissions: [PERMISSIONS.MANAGE_USERS] }
+  const adminNavItems=[
+    {name: 'Admin Panel',path: '/admin',icon: FiShield,permissions: [PERMISSIONS.MANAGE_APPLICATIONS]},
+    {name: 'User Management',path: '/user-management',icon: FiUsers,permissions: [PERMISSIONS.MANAGE_USERS]},
+    {name: 'Role Management',path: '/role-management',icon: FiShield,permissions: [PERMISSIONS.MANAGE_USERS]}
   ];
 
-  const getVisibleNavItems = () => {
+  const getVisibleNavItems=()=> {
     if (!isAuthenticated || !isApproved) {
       return publicNavItems;
     }
 
-    const items = authenticatedNavItems.filter(item => {
+    const items=authenticatedNavItems.filter(item=> {
       if (!item.permissions) return true;
-      return item.permissions.some(permission => hasPermission(permission));
+      return item.permissions.some(permission=> hasPermission(permission));
     });
 
     // Add admin items if user has permissions
-    const adminItems = adminNavItems.filter(item => {
+    const adminItems=adminNavItems.filter(item=> {
       if (!item.permissions) return true;
-      return item.permissions.some(permission => hasPermission(permission));
+      return item.permissions.some(permission=> hasPermission(permission));
     });
 
-    return [...items, ...adminItems];
+    return [...items,...adminItems];
   };
 
-  const navItems = getVisibleNavItems();
+  const navItems=getVisibleNavItems();
 
-  const handleLogout = () => {
+  const handleLogout=()=> {
     logout();
     navigate('/');
     setShowUserMenu(false);
@@ -94,12 +108,12 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.slice(0, 6).map((item) => (
+            {navItems.slice(0,6).map((item)=> (
               <RoleBasedAccess key={item.name} permissions={item.permissions || []}>
                 <Link
                   to={item.path}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
-                    location.pathname === item.path
+                    location.pathname===item.path
                       ? 'bg-ocean-100 text-ocean-700'
                       : 'text-gray-600 hover:text-ocean-600 hover:bg-ocean-50'
                   }`}
@@ -116,7 +130,7 @@ const Navbar = () => {
             {isAuthenticated && isApproved ? (
               <div className="relative">
                 <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  onClick={()=> setShowUserMenu(!showUserMenu)}
                   className="flex items-center space-x-3 p-2 rounded-lg hover:bg-ocean-50 transition-colors"
                 >
                   <img
@@ -133,15 +147,15 @@ const Navbar = () => {
                 <AnimatePresence>
                   {showUserMenu && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
+                      initial={{opacity: 0,y: -10}}
+                      animate={{opacity: 1,y: 0}}
+                      exit={{opacity: 0,y: -10}}
                       className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1"
                     >
                       <Link
                         to="/profile"
                         className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                        onClick={() => setShowUserMenu(false)}
+                        onClick={()=> setShowUserMenu(false)}
                       >
                         <SafeIcon icon={FiUser} className="text-sm" />
                         <span>Profile</span>
@@ -149,7 +163,7 @@ const Navbar = () => {
                       <Link
                         to="/settings"
                         className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                        onClick={() => setShowUserMenu(false)}
+                        onClick={()=> setShowUserMenu(false)}
                       >
                         <SafeIcon icon={FiSettings} className="text-sm" />
                         <span>Settings</span>
@@ -158,7 +172,7 @@ const Navbar = () => {
                         <Link
                           to="/user-management"
                           className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                          onClick={() => setShowUserMenu(false)}
+                          onClick={()=> setShowUserMenu(false)}
                         >
                           <SafeIcon icon={FiShield} className="text-sm" />
                           <span>User Management</span>
@@ -168,7 +182,7 @@ const Navbar = () => {
                         <Link
                           to="/role-management"
                           className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                          onClick={() => setShowUserMenu(false)}
+                          onClick={()=> setShowUserMenu(false)}
                         >
                           <SafeIcon icon={FiShield} className="text-sm" />
                           <span>Role Management</span>
@@ -178,7 +192,7 @@ const Navbar = () => {
                         <Link
                           to="/admin"
                           className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                          onClick={() => setShowUserMenu(false)}
+                          onClick={()=> setShowUserMenu(false)}
                         >
                           <SafeIcon icon={FiSettings} className="text-sm" />
                           <span>Admin Panel</span>
@@ -210,7 +224,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={()=> setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2 rounded-lg text-gray-600 hover:text-ocean-600 hover:bg-ocean-50"
           >
             <SafeIcon icon={isMobileMenuOpen ? FiX : FiMenu} className="text-xl" />
@@ -222,35 +236,36 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{opacity: 0,height: 0}}
+            animate={{opacity: 1,height: 'auto'}}
+            exit={{opacity: 0,height: 0}}
             className="md:hidden bg-white border-t border-gray-200"
           >
             <div className="px-4 py-2 space-y-1">
-              {navItems.map((item) => (
+              {navItems.map((item)=> (
                 <RoleBasedAccess key={item.name} permissions={item.permissions || []}>
                   <Link
                     to={item.path}
                     className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium ${
-                      location.pathname === item.path
+                      location.pathname===item.path
                         ? 'bg-ocean-100 text-ocean-700'
                         : 'text-gray-600 hover:text-ocean-600 hover:bg-ocean-50'
                     }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={()=> setIsMobileMenuOpen(false)}
                   >
                     <SafeIcon icon={item.icon} className="text-sm" />
                     <span>{item.name}</span>
                   </Link>
                 </RoleBasedAccess>
               ))}
+
               {isAuthenticated && isApproved && (
                 <>
                   <hr className="my-2" />
                   <Link
                     to="/profile"
                     className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-ocean-600 hover:bg-ocean-50"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={()=> setIsMobileMenuOpen(false)}
                   >
                     <SafeIcon icon={FiUser} className="text-sm" />
                     <span>Profile</span>
