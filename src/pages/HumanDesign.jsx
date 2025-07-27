@@ -1,49 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../contexts/AuthContext';
-import { useRole, PERMISSIONS } from '../contexts/RoleContext';
+import React, {useState, useEffect} from 'react';
+import {motion, AnimatePresence} from 'framer-motion';
+import {useAuth} from '../contexts/AuthContext';
+import {useRole, PERMISSIONS} from '../contexts/RoleContext';
 import ProtectedRoute from '../components/ProtectedRoute';
 import SafeIcon from '../common/SafeIcon';
 import supabase from '../lib/supabase';
 import * as FiIcons from 'react-icons/fi';
 
 const {
-  FiHeart,
-  FiUser,
-  FiTarget,
-  FiCompass,
-  FiBook,
-  FiStar,
-  FiCalendar,
-  FiClock,
-  FiActivity,
-  FiUsers,
-  FiEdit3,
-  FiPlus,
-  FiDownload,
-  FiUpload,
-  FiSettings,
-  FiPlay,
-  FiPause,
-  FiRefreshCw,
-  FiCheckCircle,
-  FiAlertCircle,
-  FiInfo,
-  FiSave,
-  FiX,
-  FiFilter,
-  FiClipboard,
-  FiFlag,
-  FiThumbsUp,
-  FiZap,
-  FiMessageCircle,
-  FiHelpCircle,
-  FiUserCheck
+  FiHeart, FiUser, FiTarget, FiCompass, FiBook, FiStar, FiCalendar, FiClock, FiActivity, FiUsers,
+  FiEdit3, FiPlus, FiDownload, FiUpload, FiSettings, FiPlay, FiPause, FiRefreshCw, FiCheckCircle,
+  FiAlertCircle, FiInfo, FiSave, FiX, FiFilter, FiClipboard, FiFlag, FiThumbsUp, FiZap, FiMessageCircle,
+  FiHelpCircle, FiUserCheck, FiSearch
 } = FiIcons;
 
 const HumanDesign = () => {
-  const { user } = useAuth();
-  const { isInstructor, hasPermission } = useRole();
+  const {user} = useAuth();
+  const {isInstructor, hasPermission} = useRole();
   
   // For students, always show overview tab. For instructors, default to students tab
   const [activeTab, setActiveTab] = useState(isInstructor() ? 'students' : 'overview');
@@ -77,79 +50,52 @@ const HumanDesign = () => {
   const [formErrors, setFormErrors] = useState({});
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPersonalProfile(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
+    const {name, value} = e.target;
+    setPersonalProfile(prev => ({...prev, [name]: value}));
     // Clear error for this field if it exists
     if (formErrors[name]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: null
-      }));
+      setFormErrors(prev => ({...prev, [name]: null}));
     }
   };
 
   const handleMultiInputChange = (name, value) => {
-    setPersonalProfile(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
+    setPersonalProfile(prev => ({...prev, [name]: value}));
     // Clear error for this field if it exists
     if (formErrors[name]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: null
-      }));
+      setFormErrors(prev => ({...prev, [name]: null}));
     }
   };
 
   const handleAddListItem = (field, newItem) => {
     if (newItem.trim() === '') return;
-    setPersonalProfile(prev => ({
-      ...prev,
-      [field]: [...prev[field], newItem.trim()]
-    }));
+    setPersonalProfile(prev => ({...prev, [field]: [...prev[field], newItem.trim()]}));
   };
 
   const handleRemoveListItem = (field, index) => {
-    setPersonalProfile(prev => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }));
+    setPersonalProfile(prev => ({...prev, [field]: prev[field].filter((_, i) => i !== index)}));
   };
 
   const validateForm = () => {
     const errors = {};
     if (!personalProfile.type) errors.type = 'Type is required';
     if (!personalProfile.authority) errors.authority = 'Authority is required';
-    
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleSaveProfile = async () => {
     if (!validateForm()) return;
-    
     setLoading(true);
     try {
       // Update profile in Supabase
-      const { data, error } = await supabase
+      const {data, error} = await supabase
         .from('user_profiles')
-        .upsert({
-          user_id: user.id,
-          human_design: personalProfile
-        }, { onConflict: 'user_id' });
-      
+        .upsert({user_id: user.id, human_design: personalProfile}, {onConflict: 'user_id'});
       if (error) throw error;
       
       // Update local storage
       localStorage.setItem('userHumanDesign', JSON.stringify(personalProfile));
       setIsEditing(false);
-      
       // Show success notification
       alert('Human Design profile updated successfully!');
     } catch (error) {
@@ -166,7 +112,7 @@ const HumanDesign = () => {
       setLoading(true);
       try {
         // First try to get from Supabase
-        const { data, error } = await supabase
+        const {data, error} = await supabase
           .from('user_profiles')
           .select('human_design')
           .eq('user_id', user.id)
@@ -196,7 +142,7 @@ const HumanDesign = () => {
         setLoading(false);
       }
     };
-    
+
     if (user?.id) {
       loadProfile();
     }
@@ -212,7 +158,7 @@ const HumanDesign = () => {
       
       setLoadingStudents(true);
       try {
-        const { data, error } = await supabase
+        const {data, error} = await supabase
           .from('user_profiles')
           .select(`
             *,
@@ -271,9 +217,8 @@ const HumanDesign = () => {
 
   // Filter students based on search and filters
   const filteredStudents = students.filter(student => {
-    const matchesSearch = 
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      student.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          student.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || student.type === filterType;
     const matchesAuthority = filterAuthority === 'all' || student.authority === filterAuthority;
     return matchesSearch && matchesType && matchesAuthority;
@@ -514,13 +459,13 @@ const HumanDesign = () => {
     if (recommendations[type]?.[authority]) {
       return recommendations[type][authority];
     }
-    
+
     // If not found, return a generic recommendation for the type
     const typeKeys = Object.keys(recommendations[type] || {});
     if (typeKeys.length > 0) {
       return recommendations[type][typeKeys[0]];
     }
-    
+
     // If type not found, return default
     return {
       approach: 'Personalized approach needed',
@@ -542,64 +487,41 @@ const HumanDesign = () => {
     };
     return roles[type] || 'Dive Buddy';
   };
-  
+
   // Get risk flags for students based on type and authority
   const getRiskFlags = (student) => {
     const flags = [];
-    
+
     // Type-based flags
     if (student.type === 'Generator') {
-      flags.push({
-        icon: FiActivity,
-        color: 'yellow',
-        text: 'May overwork without breaks'
-      });
+      flags.push({icon: FiActivity, color: 'yellow', text: 'May overwork without breaks'});
     }
-    
     if (student.type === 'Projector') {
-      flags.push({
-        icon: FiClock,
-        color: 'red',
-        text: 'Needs frequent rest periods'
-      });
+      flags.push({icon: FiClock, color: 'red', text: 'Needs frequent rest periods'});
     }
-    
     if (student.type === 'Reflector') {
-      flags.push({
-        icon: FiUsers,
-        color: 'blue',
-        text: 'Environment sensitive'
-      });
+      flags.push({icon: FiUsers, color: 'blue', text: 'Environment sensitive'});
     }
-    
+
     // Authority-based flags
     if (student.authority === 'Emotional') {
-      flags.push({
-        icon: FiHeart,
-        color: 'purple',
-        text: 'Wait for emotional clarity'
-      });
+      flags.push({icon: FiHeart, color: 'purple', text: 'Wait for emotional clarity'});
     }
-    
     if (student.authority === 'Splenic') {
-      flags.push({
-        icon: FiTarget,
-        color: 'green',
-        text: 'Trust immediate intuition'
-      });
+      flags.push({icon: FiTarget, color: 'green', text: 'Trust immediate intuition'});
     }
-    
+
     return flags;
   };
 
   // Student detail view - ONLY for instructors
   const renderStudentDetail = () => {
     if (!selectedStudent || !isInstructor()) return null;
-    
+
     const recommendations = getTrainingRecommendations(selectedStudent.type, selectedStudent.authority);
     const riskFlags = getRiskFlags(selectedStudent);
     const diveBuddyRole = getDiveBuddyRole(selectedStudent.type);
-    
+
     return (
       <div className="space-y-8">
         {/* Student Header */}
@@ -621,7 +543,7 @@ const HumanDesign = () => {
               <SafeIcon icon={FiX} className="text-gray-600" />
             </button>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Human Design Profile</h4>
@@ -643,17 +565,14 @@ const HumanDesign = () => {
                   <span className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-sm">{diveBuddyRole}</span>
                 </div>
               </div>
-              
+
               {/* Risk flags */}
               {riskFlags.length > 0 && (
                 <div className="mt-4">
                   <h4 className="font-semibold text-gray-900 mb-2">Coaching Flags</h4>
                   <div className="flex flex-wrap gap-2">
                     {riskFlags.map((flag, idx) => (
-                      <div 
-                        key={idx}
-                        className={`flex items-center space-x-1 px-2 py-1 rounded bg-${flag.color}-50 text-${flag.color}-800 text-xs`}
-                      >
+                      <div key={idx} className={`flex items-center space-x-1 px-2 py-1 rounded bg-${flag.color}-50 text-${flag.color}-800 text-xs`}>
                         <SafeIcon icon={flag.icon} className={`text-${flag.color}-500`} />
                         <span>{flag.text}</span>
                       </div>
@@ -662,7 +581,7 @@ const HumanDesign = () => {
                 </div>
               )}
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Current Progress</h4>
               <div className="mb-2 flex justify-between">
@@ -670,12 +589,12 @@ const HumanDesign = () => {
                 <span className="text-sm font-medium text-ocean-600">{selectedStudent.progress}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                <div 
-                  className="bg-ocean-600 h-2 rounded-full" 
+                <div
+                  className="bg-ocean-600 h-2 rounded-full"
                   style={{width: `${selectedStudent.progress}%`}}
                 ></div>
               </div>
-              
+
               <h4 className="font-semibold text-gray-900 mb-2">Current Goals</h4>
               <ul className="space-y-1">
                 {selectedStudent.currentGoals.map((goal, index) => (
@@ -694,14 +613,14 @@ const HumanDesign = () => {
           <h3 className="text-xl font-bold text-gray-900 mb-4">
             Freediver Profile
           </h3>
-          
+
           <div className="mb-6">
             <h4 className="font-semibold text-gray-900 mb-2">Description</h4>
             <p className="text-gray-700">
               {selectedStudent.description || typeDetails[selectedStudent.type]?.description || 'No description available.'}
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <div>
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
@@ -709,89 +628,78 @@ const HumanDesign = () => {
                 <span>Strengths</span>
               </h4>
               <ul className="space-y-1">
-                {(selectedStudent.strengths?.length > 0 ? 
-                  selectedStudent.strengths : 
-                  typeDetails[selectedStudent.type]?.strengths || []
-                ).map((strength, idx) => (
-                  <li key={idx} className="flex items-start space-x-2">
-                    <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-xs" />
-                    <span className="text-gray-700 text-sm">{strength}</span>
-                  </li>
-                ))}
+                {(selectedStudent.strengths?.length > 0 ? selectedStudent.strengths : typeDetails[selectedStudent.type]?.strengths || [])
+                  .map((strength, idx) => (
+                    <li key={idx} className="flex items-start space-x-2">
+                      <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-xs" />
+                      <span className="text-gray-700 text-sm">{strength}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
                 <SafeIcon icon={FiAlertCircle} className="text-red-500" />
                 <span>Challenges</span>
               </h4>
               <ul className="space-y-1">
-                {(selectedStudent.challenges?.length > 0 ? 
-                  selectedStudent.challenges : 
-                  typeDetails[selectedStudent.type]?.challenges || []
-                ).map((challenge, idx) => (
-                  <li key={idx} className="flex items-start space-x-2">
-                    <SafeIcon icon={FiFlag} className="text-red-500 mt-1 text-xs" />
-                    <span className="text-gray-700 text-sm">{challenge}</span>
-                  </li>
-                ))}
+                {(selectedStudent.challenges?.length > 0 ? selectedStudent.challenges : typeDetails[selectedStudent.type]?.challenges || [])
+                  .map((challenge, idx) => (
+                    <li key={idx} className="flex items-start space-x-2">
+                      <SafeIcon icon={FiFlag} className="text-red-500 mt-1 text-xs" />
+                      <span className="text-gray-700 text-sm">{challenge}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
                 <SafeIcon icon={FiTarget} className="text-blue-500" />
                 <span>Opportunities</span>
               </h4>
               <ul className="space-y-1">
-                {(selectedStudent.opportunities?.length > 0 ? 
-                  selectedStudent.opportunities : 
-                  typeDetails[selectedStudent.type]?.opportunities || []
-                ).map((opportunity, idx) => (
-                  <li key={idx} className="flex items-start space-x-2">
-                    <SafeIcon icon={FiTarget} className="text-blue-500 mt-1 text-xs" />
-                    <span className="text-gray-700 text-sm">{opportunity}</span>
-                  </li>
-                ))}
+                {(selectedStudent.opportunities?.length > 0 ? selectedStudent.opportunities : typeDetails[selectedStudent.type]?.opportunities || [])
+                  .map((opportunity, idx) => (
+                    <li key={idx} className="flex items-start space-x-2">
+                      <SafeIcon icon={FiTarget} className="text-blue-500 mt-1 text-xs" />
+                      <span className="text-gray-700 text-sm">{opportunity}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>
         </div>
-        
+
         {/* Training Recommendations */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-xl font-bold text-gray-900 mb-4">
             Human Design-Based Training Recommendations
           </h3>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Optimal Approach</h4>
                 <p className="text-gray-700">{recommendations.approach}</p>
               </div>
-              
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Recommended Pacing</h4>
                 <p className="text-gray-700">{recommendations.pacing}</p>
               </div>
-              
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Coaching Style</h4>
                 <p className="text-gray-700">{recommendations.coaching}</p>
               </div>
-              
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Learning Style</h4>
                 <p className="text-gray-700">
-                  {selectedStudent.learningStylePreference || 
-                   typeDetails[selectedStudent.type]?.learningStylePreference || 
-                   'Individual assessment required.'}
+                  {selectedStudent.learningStylePreference || typeDetails[selectedStudent.type]?.learningStylePreference || 'Individual assessment required.'}
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Recommended Techniques</h4>
@@ -804,16 +712,14 @@ const HumanDesign = () => {
                   ))}
                 </ul>
               </div>
-              
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Ideal Session Structure</h4>
                 <p className="text-gray-700">{recommendations.sessions}</p>
               </div>
-              
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Coaching Actions</h4>
                 <div className="flex flex-wrap gap-2">
-                  <button 
+                  <button
                     onClick={() => navigator.clipboard.writeText(recommendations.coaching)}
                     className="bg-ocean-100 text-ocean-800 px-3 py-1 rounded-lg text-sm font-medium hover:bg-ocean-200 flex items-center space-x-1"
                   >
@@ -835,14 +741,13 @@ const HumanDesign = () => {
 
         {/* Action Buttons */}
         <div className="flex space-x-4">
-          <button 
+          <button
             onClick={() => setShowTrainingPlan(true)}
             className="flex-1 bg-ocean-600 text-white py-3 rounded-lg font-medium hover:bg-ocean-700 transition-colors flex items-center justify-center space-x-2"
           >
             <SafeIcon icon={FiTarget} />
             <span>Generate Training Plan</span>
           </button>
-          
           <button
             onClick={() => setShowProfileModal(true)}
             className="flex-1 border border-ocean-600 text-ocean-600 py-3 rounded-lg font-medium hover:bg-ocean-50 transition-colors flex items-center justify-center space-x-2"
@@ -861,13 +766,9 @@ const HumanDesign = () => {
       <div className="bg-white rounded-xl shadow-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-gray-900">Your Human Design Profile</h3>
-          <button 
+          <button
             onClick={() => isEditing ? handleSaveProfile() : setIsEditing(true)}
-            className={`flex items-center space-x-2 ${
-              isEditing 
-                ? 'bg-green-600 hover:bg-green-700' 
-                : 'bg-ocean-600 hover:bg-ocean-700'
-            } text-white px-4 py-2 rounded-lg transition-colors`}
+            className={`flex items-center space-x-2 ${isEditing ? 'bg-green-600 hover:bg-green-700' : 'bg-ocean-600 hover:bg-ocean-700'} text-white px-4 py-2 rounded-lg transition-colors`}
             disabled={loading}
           >
             {loading ? (
@@ -885,15 +786,11 @@ const HumanDesign = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
               {isEditing ? (
                 <div>
-                  <select 
-                    name="type" 
-                    value={personalProfile.type} 
+                  <select
+                    name="type"
+                    value={personalProfile.type}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border ${
-                      formErrors.type 
-                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:ring-ocean-500 focus:border-ocean-500'
-                    } rounded-lg`}
+                    className={`w-full px-4 py-3 border ${formErrors.type ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-ocean-500 focus:border-ocean-500'} rounded-lg`}
                   >
                     <option value="">Select Type</option>
                     <option value="Generator">Generator</option>
@@ -914,9 +811,9 @@ const HumanDesign = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Strategy</label>
               {isEditing ? (
-                <select 
-                  name="strategy" 
-                  value={personalProfile.strategy} 
+                <select
+                  name="strategy"
+                  value={personalProfile.strategy}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
                 >
@@ -936,15 +833,11 @@ const HumanDesign = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Authority</label>
               {isEditing ? (
                 <div>
-                  <select 
-                    name="authority" 
-                    value={personalProfile.authority} 
+                  <select
+                    name="authority"
+                    value={personalProfile.authority}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border ${
-                      formErrors.authority 
-                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:ring-ocean-500 focus:border-ocean-500'
-                    } rounded-lg`}
+                    className={`w-full px-4 py-3 border ${formErrors.authority ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-ocean-500 focus:border-ocean-500'} rounded-lg`}
                   >
                     <option value="">Select Authority</option>
                     <option value="Emotional">Emotional</option>
@@ -966,10 +859,10 @@ const HumanDesign = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Profile</label>
               {isEditing ? (
-                <input 
-                  type="text" 
-                  name="profile" 
-                  value={personalProfile.profile} 
+                <input
+                  type="text"
+                  name="profile"
+                  value={personalProfile.profile}
                   onChange={handleInputChange}
                   placeholder="e.g., 6/2 Role Model Hermit"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
@@ -980,11 +873,10 @@ const HumanDesign = () => {
             </div>
           </div>
         </div>
-        
+
         {isEditing && (
           <div className="mt-6 border-t border-gray-200 pt-6">
             <h4 className="font-semibold text-gray-900 mb-4">Freediver Profile Details</h4>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -999,7 +891,7 @@ const HumanDesign = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
                 />
               </div>
-              
+
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1009,7 +901,7 @@ const HumanDesign = () => {
                     {personalProfile.strengths.map((strength, idx) => (
                       <div key={idx} className="flex justify-between items-center bg-gray-50 p-2 rounded">
                         <span className="text-sm">{strength}</span>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => handleRemoveListItem('strengths', idx)}
                           className="text-red-500 hover:text-red-700"
@@ -1045,7 +937,7 @@ const HumanDesign = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Challenges
@@ -1054,7 +946,7 @@ const HumanDesign = () => {
                     {personalProfile.challenges.map((challenge, idx) => (
                       <div key={idx} className="flex justify-between items-center bg-gray-50 p-2 rounded">
                         <span className="text-sm">{challenge}</span>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => handleRemoveListItem('challenges', idx)}
                           className="text-red-500 hover:text-red-700"
@@ -1090,7 +982,7 @@ const HumanDesign = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Opportunities
@@ -1099,7 +991,7 @@ const HumanDesign = () => {
                     {personalProfile.opportunities.map((opportunity, idx) => (
                       <div key={idx} className="flex justify-between items-center bg-gray-50 p-2 rounded">
                         <span className="text-sm">{opportunity}</span>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => handleRemoveListItem('opportunities', idx)}
                           className="text-red-500 hover:text-red-700"
@@ -1136,7 +1028,7 @@ const HumanDesign = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1151,7 +1043,6 @@ const HumanDesign = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Coaching Preference
@@ -1165,7 +1056,6 @@ const HumanDesign = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Dive Buddy Relationship
@@ -1237,7 +1127,7 @@ const HumanDesign = () => {
           </p>
         </div>
       </div>
-      
+
       {/* Freediver Profile */}
       {!isEditing && (
         <div className="bg-white rounded-xl shadow-lg p-6">
@@ -1257,15 +1147,13 @@ const HumanDesign = () => {
                 <span>Strengths</span>
               </h4>
               <ul className="space-y-1">
-                {(personalProfile.strengths?.length > 0 ? 
-                  personalProfile.strengths : 
-                  typeDetails[personalProfile.type]?.strengths || []
-                ).map((strength, idx) => (
-                  <li key={idx} className="flex items-start space-x-2">
-                    <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-xs" />
-                    <span className="text-gray-700 text-sm">{strength}</span>
-                  </li>
-                ))}
+                {(personalProfile.strengths?.length > 0 ? personalProfile.strengths : typeDetails[personalProfile.type]?.strengths || [])
+                  .map((strength, idx) => (
+                    <li key={idx} className="flex items-start space-x-2">
+                      <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-xs" />
+                      <span className="text-gray-700 text-sm">{strength}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
             
@@ -1275,15 +1163,13 @@ const HumanDesign = () => {
                 <span>Challenges</span>
               </h4>
               <ul className="space-y-1">
-                {(personalProfile.challenges?.length > 0 ? 
-                  personalProfile.challenges : 
-                  typeDetails[personalProfile.type]?.challenges || []
-                ).map((challenge, idx) => (
-                  <li key={idx} className="flex items-start space-x-2">
-                    <SafeIcon icon={FiFlag} className="text-red-500 mt-1 text-xs" />
-                    <span className="text-gray-700 text-sm">{challenge}</span>
-                  </li>
-                ))}
+                {(personalProfile.challenges?.length > 0 ? personalProfile.challenges : typeDetails[personalProfile.type]?.challenges || [])
+                  .map((challenge, idx) => (
+                    <li key={idx} className="flex items-start space-x-2">
+                      <SafeIcon icon={FiFlag} className="text-red-500 mt-1 text-xs" />
+                      <span className="text-gray-700 text-sm">{challenge}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
             
@@ -1293,15 +1179,13 @@ const HumanDesign = () => {
                 <span>Opportunities</span>
               </h4>
               <ul className="space-y-1">
-                {(personalProfile.opportunities?.length > 0 ? 
-                  personalProfile.opportunities : 
-                  typeDetails[personalProfile.type]?.opportunities || []
-                ).map((opportunity, idx) => (
-                  <li key={idx} className="flex items-start space-x-2">
-                    <SafeIcon icon={FiTarget} className="text-blue-500 mt-1 text-xs" />
-                    <span className="text-gray-700 text-sm">{opportunity}</span>
-                  </li>
-                ))}
+                {(personalProfile.opportunities?.length > 0 ? personalProfile.opportunities : typeDetails[personalProfile.type]?.opportunities || [])
+                  .map((opportunity, idx) => (
+                    <li key={idx} className="flex items-start space-x-2">
+                      <SafeIcon icon={FiTarget} className="text-blue-500 mt-1 text-xs" />
+                      <span className="text-gray-700 text-sm">{opportunity}</span>
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>
@@ -1310,27 +1194,21 @@ const HumanDesign = () => {
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">Learning Style Preference</h4>
               <p className="text-gray-700">
-                {personalProfile.learningStylePreference || 
-                 typeDetails[personalProfile.type]?.learningStylePreference || 
-                 'No preference specified.'}
+                {personalProfile.learningStylePreference || typeDetails[personalProfile.type]?.learningStylePreference || 'No preference specified.'}
               </p>
             </div>
             
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">Coaching Preference</h4>
               <p className="text-gray-700">
-                {personalProfile.coachingPreference || 
-                 typeDetails[personalProfile.type]?.coachingPreference || 
-                 'No preference specified.'}
+                {personalProfile.coachingPreference || typeDetails[personalProfile.type]?.coachingPreference || 'No preference specified.'}
               </p>
             </div>
             
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">Dive Buddy Relationship</h4>
               <p className="text-gray-700">
-                {personalProfile.diveBuddyRelationship || 
-                 typeDetails[personalProfile.type]?.diveBuddyRelationship || 
-                 'No preference specified.'}
+                {personalProfile.diveBuddyRelationship || typeDetails[personalProfile.type]?.diveBuddyRelationship || 'No preference specified.'}
               </p>
             </div>
           </div>
@@ -1348,9 +1226,11 @@ const HumanDesign = () => {
 
   const renderPersonalRecommendations = () => {
     const recommendations = getTrainingRecommendations(personalProfile.type, personalProfile.authority);
+    
     return (
       <div className="space-y-8">
         <h3 className="text-xl font-bold text-gray-900">Personalized Freediving Recommendations</h3>
+        
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h4 className="text-lg font-semibold text-ocean-900 mb-4 flex items-center space-x-2">
             <SafeIcon icon={FiTarget} className="text-ocean-600" />
@@ -1363,12 +1243,10 @@ const HumanDesign = () => {
                 <h5 className="font-medium text-gray-900 mb-2">Primary Approach</h5>
                 <p className="text-gray-700">{recommendations.approach}</p>
               </div>
-              
               <div>
                 <h5 className="font-medium text-gray-900 mb-2">Optimal Pacing</h5>
                 <p className="text-gray-700">{recommendations.pacing}</p>
               </div>
-              
               <div>
                 <h5 className="font-medium text-gray-900 mb-2">Session Structure</h5>
                 <p className="text-gray-700">{recommendations.sessions}</p>
@@ -1387,7 +1265,6 @@ const HumanDesign = () => {
                   ))}
                 </ul>
               </div>
-              
               <div>
                 <h5 className="font-medium text-gray-900 mb-2">Coaching Style</h5>
                 <p className="text-gray-700">{recommendations.coaching}</p>
@@ -1421,7 +1298,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.type === "Manifestor" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1438,7 +1314,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.type === "Projector" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1455,7 +1330,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.type === "Reflector" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1472,7 +1346,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.type === "Manifesting Generator" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1509,7 +1382,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.authority === "Sacral" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1522,7 +1394,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.authority === "Splenic" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1535,7 +1406,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.authority === "Self-Projected" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1548,7 +1418,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.authority === "Ego" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1561,7 +1430,6 @@ const HumanDesign = () => {
                       </li>
                     </>
                   )}
-                  
                   {personalProfile.authority === "Lunar" && (
                     <>
                       <li className="flex items-start space-x-2">
@@ -1594,18 +1462,18 @@ const HumanDesign = () => {
           <div className="grid md:grid-cols-3 gap-4">
             <div className="relative">
               <SafeIcon icon={FiSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search students..." 
+              <input
+                type="text"
+                placeholder="Search students..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent" 
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
               />
             </div>
             
             <div className="relative">
               <SafeIcon icon={FiFilter} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <select 
+              <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent appearance-none"
@@ -1621,7 +1489,7 @@ const HumanDesign = () => {
             
             <div className="relative">
               <SafeIcon icon={FiFilter} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <select 
+              <select
                 value={filterAuthority}
                 onChange={(e) => setFilterAuthority(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent appearance-none"
@@ -1684,8 +1552,8 @@ const HumanDesign = () => {
                 </div>
                 
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-ocean-600 h-2 rounded-full transition-all duration-500" 
+                  <div
+                    className="bg-ocean-600 h-2 rounded-full transition-all duration-500"
                     style={{width: `${student.progress}%`}}
                   ></div>
                 </div>
@@ -1694,10 +1562,7 @@ const HumanDesign = () => {
                 {getRiskFlags(student).length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {getRiskFlags(student).slice(0, 2).map((flag, idx) => (
-                      <div 
-                        key={idx}
-                        className={`flex items-center space-x-1 px-2 py-1 rounded bg-${flag.color}-50 text-${flag.color}-800 text-xs`}
-                      >
+                      <div key={idx} className={`flex items-center space-x-1 px-2 py-1 rounded bg-${flag.color}-50 text-${flag.color}-800 text-xs`}>
                         <SafeIcon icon={flag.icon} className={`text-${flag.color}-500`} />
                         <span>{flag.text}</span>
                       </div>
@@ -1853,7 +1718,6 @@ const HumanDesign = () => {
           
           <div className="mt-6 pt-6 border-t border-gray-200">
             <h4 className="font-semibold text-gray-900 mb-3">Session Planning Tools</h4>
-            
             <div className="grid md:grid-cols-3 gap-4">
               <button className="bg-ocean-600 text-white p-4 rounded-lg hover:bg-ocean-700 transition-colors flex flex-col items-center">
                 <SafeIcon icon={FiCalendar} className="text-2xl mb-2" />
@@ -1879,7 +1743,6 @@ const HumanDesign = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Training Adaptations</h4>
-              
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
                   <div className="bg-blue-100 rounded-full p-2 mt-1">
@@ -1921,7 +1784,6 @@ const HumanDesign = () => {
             
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Authority-Based Coaching</h4>
-              
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
                   <div className="bg-yellow-100 rounded-full p-2 mt-1">
@@ -2141,7 +2003,7 @@ const HumanDesign = () => {
           </motion.div>
         </div>
       </div>
-      
+
       {/* Training Plan Modal */}
       <AnimatePresence>
         {showTrainingPlan && selectedStudent && (
@@ -2178,8 +2040,7 @@ const HumanDesign = () => {
                     <div>
                       <h3 className="font-semibold text-ocean-900 mb-1">Human Design-Informed Plan</h3>
                       <p className="text-ocean-700">
-                        This training plan is customized for {selectedStudent.name}'s {selectedStudent.type} energy type 
-                        with {selectedStudent.authority} authority.
+                        This training plan is customized for {selectedStudent.name}'s {selectedStudent.type} energy type with {selectedStudent.authority} authority.
                       </p>
                     </div>
                   </div>
@@ -2188,7 +2049,6 @@ const HumanDesign = () => {
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4">8-Week Progressive Training Plan</h3>
-                    
                     <div className="space-y-4">
                       <div className="bg-white border border-gray-200 rounded-lg p-4">
                         <h4 className="font-semibold text-ocean-900 mb-2">Weeks 1-2: Foundation Building</h4>
@@ -2199,7 +2059,6 @@ const HumanDesign = () => {
                           {selectedStudent.type === 'Reflector' && 'Create environmental awareness and adaptability with supportive group dynamics.'}
                           {selectedStudent.type === 'Manifesting Generator' && 'Develop multi-faceted skills with varied, engaging practice sessions.'}
                         </p>
-                        
                         <div className="space-y-2">
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
@@ -2211,7 +2070,6 @@ const HumanDesign = () => {
                               {selectedStudent.type === 'Manifesting Generator' && '3-4 varied sessions per week with multiple skill focus'}
                             </span>
                           </div>
-                          
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
                             <span className="text-gray-700">
@@ -2223,20 +2081,18 @@ const HumanDesign = () => {
                               {selectedStudent.authority === 'Lunar' && 'Gradual introduction to different training environments'}
                             </span>
                           </div>
-                          
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
                             <span className="text-gray-700">Basic breathing techniques, relaxation practice, and initial static apnea work</span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="bg-white border border-gray-200 rounded-lg p-4">
                         <h4 className="font-semibold text-ocean-900 mb-2">Weeks 3-5: Skill Development</h4>
                         <p className="text-gray-700 mb-3">
                           Progressive training with increasing depth/duration goals aligned with {selectedStudent.name}'s Human Design energy pattern.
                         </p>
-                        
                         <div className="space-y-2">
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
@@ -2248,14 +2104,12 @@ const HumanDesign = () => {
                               {selectedStudent.type === 'Manifesting Generator' && 'Multiple discipline training with quick transitions'}
                             </span>
                           </div>
-                          
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
                             <span className="text-gray-700">
                               Introduction to CO2 and O2 tables customized for {selectedStudent.type} energy management
                             </span>
                           </div>
-                          
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
                             <span className="text-gray-700">
@@ -2270,7 +2124,6 @@ const HumanDesign = () => {
                         <p className="text-gray-700 mb-3">
                           Consolidation of skills and preparation for performance goals with Human Design alignment.
                         </p>
-                        
                         <div className="space-y-2">
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
@@ -2282,14 +2135,12 @@ const HumanDesign = () => {
                               {selectedStudent.type === 'Manifesting Generator' && 'Versatile skill application across multiple disciplines'}
                             </span>
                           </div>
-                          
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
                             <span className="text-gray-700">
                               Personal best attempts with {selectedStudent.authority}-aligned decision making
                             </span>
                           </div>
-                          
                           <div className="flex items-start space-x-2">
                             <SafeIcon icon={FiCheckCircle} className="text-green-500 mt-1 text-sm" />
                             <span className="text-gray-700">
@@ -2303,10 +2154,8 @@ const HumanDesign = () => {
                   
                   <div className="pt-6 border-t border-gray-200">
                     <h3 className="text-xl font-bold text-gray-900 mb-4">Coaching Recommendations</h3>
-                    
                     <div className="bg-ocean-50 rounded-lg p-4">
                       <h4 className="font-semibold text-ocean-900 mb-2">Human Design-Based Approach</h4>
-                      
                       <div className="space-y-3">
                         <div className="flex items-start space-x-3">
                           <SafeIcon icon={FiMessageCircle} className="text-ocean-600 mt-1" />
@@ -2354,31 +2203,31 @@ const HumanDesign = () => {
                     </div>
                   </div>
                 </div>
-                
-                <div className="mt-6 flex space-x-4">
-                  <button
-                    onClick={() => setShowTrainingPlan(false)}
-                    className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={() => {
-                      // In a real app, this would save the plan to the database
-                      alert('Training plan saved and shared with student!');
-                      setShowTrainingPlan(false);
-                    }}
-                    className="flex-1 bg-ocean-600 text-white py-3 rounded-lg font-medium hover:bg-ocean-700 transition-colors"
-                  >
-                    Save & Share Plan
-                  </button>
-                </div>
+              </div>
+              
+              <div className="mt-6 flex space-x-4">
+                <button
+                  onClick={() => setShowTrainingPlan(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => {
+                    // In a real app, this would save the plan to the database
+                    alert('Training plan saved and shared with student!');
+                    setShowTrainingPlan(false);
+                  }}
+                  className="flex-1 bg-ocean-600 text-white py-3 rounded-lg font-medium hover:bg-ocean-700 transition-colors"
+                >
+                  Save & Share Plan
+                </button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* Session Planner Modal */}
       <AnimatePresence>
         {showSessionPlanner && selectedStudent && (
@@ -2420,14 +2269,11 @@ const HumanDesign = () => {
                       defaultValue={new Date().toISOString().split('T')[0]}
                     />
                   </div>
-                  
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Session Type
                     </label>
-                    <select
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
-                    >
+                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent">
                       <option value="pool">Pool Training</option>
                       <option value="openWater">Open Water</option>
                       <option value="theory">Theory & Technique</option>
@@ -2441,7 +2287,6 @@ const HumanDesign = () => {
                     <SafeIcon icon={FiHeart} className="text-blue-600" />
                     <span>Human Design Considerations</span>
                   </h3>
-                  
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
                       <SafeIcon icon={FiUserCheck} className="text-blue-600 mt-1" />
@@ -2451,7 +2296,6 @@ const HumanDesign = () => {
                         </p>
                       </div>
                     </div>
-                    
                     <div className="flex items-start space-x-3">
                       <SafeIcon icon={FiTarget} className="text-blue-600 mt-1" />
                       <div>
@@ -2460,13 +2304,11 @@ const HumanDesign = () => {
                         </p>
                       </div>
                     </div>
-                    
                     <div className="flex items-start space-x-3">
                       <SafeIcon icon={FiBook} className="text-blue-600 mt-1" />
                       <div>
                         <p className="text-blue-800">
-                          <strong>Learning Style:</strong> {selectedStudent.learningStylePreference || 
-                            typeDetails[selectedStudent.type]?.learningStylePreference}
+                          <strong>Learning Style:</strong> {selectedStudent.learningStylePreference || typeDetails[selectedStudent.type]?.learningStylePreference}
                         </p>
                       </div>
                     </div>
@@ -2475,7 +2317,6 @@ const HumanDesign = () => {
                 
                 <div className="mb-6">
                   <h3 className="font-semibold text-gray-900 mb-3">Session Plan</h3>
-                  
                   <div className="space-y-4">
                     <div className="border border-gray-200 rounded-lg p-4">
                       <div className="flex justify-between items-center mb-2">
@@ -2486,11 +2327,13 @@ const HumanDesign = () => {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
                         rows={3}
                         placeholder="Describe warm-up activities..."
-                        defaultValue={`${selectedStudent.type === 'Generator' ? 'Progressive engagement warm-up' : 
-                                        selectedStudent.type === 'Manifestor' ? 'Self-directed warm-up with options' :
-                                        selectedStudent.type === 'Projector' ? 'Guided visualization and gentle stretching' :
-                                        selectedStudent.type === 'Reflector' ? 'Group-based warm-up in supportive setting' :
-                                        'Multi-faceted warm-up with variety'}`}
+                        defaultValue={`${
+                          selectedStudent.type === 'Generator' ? 'Progressive engagement warm-up' :
+                          selectedStudent.type === 'Manifestor' ? 'Self-directed warm-up with options' :
+                          selectedStudent.type === 'Projector' ? 'Guided visualization and gentle stretching' :
+                          selectedStudent.type === 'Reflector' ? 'Group-based warm-up in supportive setting' :
+                          'Multi-faceted warm-up with variety'
+                        }`}
                       ></textarea>
                     </div>
                     
@@ -2504,11 +2347,15 @@ const HumanDesign = () => {
                         rows={5}
                         placeholder="Describe main session activities..."
                         defaultValue={`Human Design-informed training focus:
-${selectedStudent.type === 'Generator' ? '- Consistent practice with clear feedback loops\n- Regular check-ins for satisfaction\n- Progressive challenges based on response' : 
-  selectedStudent.type === 'Manifestor' ? '- Self-directed practice periods\n- Clear goals with autonomy in execution\n- Adequate rest between intense efforts' :
-  selectedStudent.type === 'Projector' ? '- Technique-focused training with quality over quantity\n- Recognition for insights and observations\n- Shorter sessions with more rest' :
-  selectedStudent.type === 'Reflector' ? '- Supportive environment with consistent conditions\n- Group harmony and connection\n- Gradual progression with lunar awareness' :
-  '- Varied activities with multiple focuses\n- Quick transitions between disciplines\n- Adaptive challenges based on energy'}`}
+${selectedStudent.type === 'Generator' ? 
+'- Consistent practice with clear feedback loops\n- Regular check-ins for satisfaction\n- Progressive challenges based on response' : 
+selectedStudent.type === 'Manifestor' ? 
+'- Self-directed practice periods\n- Clear goals with autonomy in execution\n- Adequate rest between intense efforts' : 
+selectedStudent.type === 'Projector' ? 
+'- Technique-focused training with quality over quantity\n- Recognition for insights and observations\n- Shorter sessions with more rest' : 
+selectedStudent.type === 'Reflector' ? 
+'- Supportive environment with consistent conditions\n- Group harmony and connection\n- Gradual progression with lunar awareness' : 
+'- Varied activities with multiple focuses\n- Quick transitions between disciplines\n- Adaptive challenges based on energy'}`}
                       ></textarea>
                     </div>
                     
@@ -2521,12 +2368,14 @@ ${selectedStudent.type === 'Generator' ? '- Consistent practice with clear feedb
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent"
                         rows={3}
                         placeholder="Describe cool-down activities..."
-                        defaultValue={`${selectedStudent.authority === 'Emotional' ? 'Gentle emotional processing exercises with ample reflection time' : 
-                                        selectedStudent.authority === 'Sacral' ? 'Body-focused relaxation with satisfaction check-ins' : 
-                                        selectedStudent.authority === 'Splenic' ? 'Intuitive stretching, allowing student to follow what feels right' : 
-                                        selectedStudent.authority === 'Self-Projected' ? 'Verbal processing of session experience and insights' : 
-                                        selectedStudent.authority === 'Ego' ? 'Self-directed cool down with recognition of achievements' : 
-                                        'Environmental attunement and gradual transition'}`}
+                        defaultValue={`${
+                          selectedStudent.authority === 'Emotional' ? 'Gentle emotional processing exercises with ample reflection time' : 
+                          selectedStudent.authority === 'Sacral' ? 'Body-focused relaxation with satisfaction check-ins' :
+                          selectedStudent.authority === 'Splenic' ? 'Intuitive stretching, allowing student to follow what feels right' :
+                          selectedStudent.authority === 'Self-Projected' ? 'Verbal processing of session experience and insights' :
+                          selectedStudent.authority === 'Ego' ? 'Self-directed cool down with recognition of achievements' :
+                          'Environmental attunement and gradual transition'
+                        }`}
                       ></textarea>
                     </div>
                   </div>
